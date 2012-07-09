@@ -1,51 +1,38 @@
 <!DOCTYPE html> 
 <html>
   <head>
-    <script src="../jaws-dynamic.js"></script>
-    <link type="text/css" rel="stylesheet" href="style.css" />
-    <title>Jaws Example #9 - Viewport()</title>
+    <script src="lib/jaws.js"></script>
+    <title>Goutte</title>
   </head>
 <body>
 
   <canvas width=500 height=320></canvas>
-  Move with arrow keys.
-  <div id="live_info"></div>
-  
-  <div id="info">
-    <h1>ViewPort and TileMap</h1>
-    Viewport() demo. 
-  </div>
-  
-  <h3>jaws log</h3>
-  <div id="jaws-log"></div>
- 
+
   <script>
     function Example() {
       var player
       var blocks
-      var fps
       var viewport
       var tile_map
 
       /* Called once when a game state is activated. Use it for one-time setup code. */
       this.setup = function() {
-        live_info = document.getElementById("live_info")
         blocks = new jaws.SpriteList()
         var world = new jaws.Rect(0,0,320*10,320*2)
         
         /* We create some 32x32 blocks and save them in array blocks */
         for(var y = 0; y < world.height; y += 32 ) {
-          blocks.push( new Sprite({image: "block.bmp", x: 0, y: y}) )
-          blocks.push( new Sprite({image: "block.bmp", x: world.width-32, y: y}) )
+          blocks.push( new Sprite({image: "images/block.bmp", x: 0, y: y}) )
+          blocks.push( new Sprite({image: "images/block.bmp", x: world.width-32, y: y}) )
         }
         for(var x = 0; x < world.width; x += 32 ) {
-          blocks.push( new Sprite({image: "block.bmp", x: x, y: world.height-32}) )
+          blocks.push( new Sprite({image: "images/block.bmp", x: x, y: world.height-32}) )
         }
         for(var x = 320; x < world.width; x += 32 ) {
-          blocks.push( new Sprite({image: "block.bmp", x: x, y: world.height-64}) )
+          blocks.push( new Sprite({image: "images/block.bmp", x: x, y: world.height-64}) )
         }
         for(var i=0; i < 50; i++) {
-          blocks.push( new Sprite({image: "block.bmp", x: parseInt(Math.random()*100)*32, y: world.height - parseInt(Math.random()*10)*32}) ) 
+          blocks.push( new Sprite({image: "images/block.bmp", x: parseInt(Math.random()*100)*32, y: world.height - parseInt(Math.random()*10)*32}) ) 
         }
 
         // A tile map, each cell is 32x32 pixels. There's 100 such cells across and 100 downwards.
@@ -81,7 +68,7 @@
           }
         }
 
-        var anim = new jaws.Animation({sprite_sheet: "droid_11x15.png", frame_size: [11,15], frame_duration: 100})
+        var anim = new jaws.Animation({sprite_sheet: "images/droid_11x15.png", frame_size: [11,15], frame_duration: 100})
         player.anim_default = anim.slice(0,5)
         player.anim_up = anim.slice(6,8)
         player.anim_down = anim.slice(8,10)
@@ -113,10 +100,6 @@
         // Tries to center viewport around player.x / player.y.
         // It won't go outside of 0 or outside of our previously specified max_x, max_y values.
         viewport.centerAround(player)
-
-        live_info.innerHTML = jaws.game_loop.fps + " fps. Player: " + parseInt(player.x) + "/" + parseInt(player.y) + ". "
-        live_info.innerHTML += "Viewport: " + parseInt(viewport.x) + "/" + parseInt(viewport.y) + "."
-
       }
 
       /* Directly after each update draw() will be called. Put all your on-screen operations here. */
@@ -133,7 +116,7 @@
     
     jaws.onload = function() {
       jaws.unpack()
-      jaws.assets.add(["droid_11x15.png","block.bmp"])
+      jaws.assets.add(["images/droid_11x15.png","images/block.bmp"])
       jaws.start(Example)  // Our convenience function jaws.start() will load assets, call setup and loop update/draw in 60 FPS
     }
   </script>
