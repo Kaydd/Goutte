@@ -56,26 +56,35 @@ function PlayState() {
 
     viewport = new jaws.Viewport({max_x: world.width, max_y: world.height})
 
-    player = new jaws.Sprite({x:240, y:50, scale: 2, anchor: "center_bottom"})
+    player = new jaws.Sprite({x:177, y:50, scale: 2, anchor: "center_bottom"})
+    columnIndex = 1
+    columns = this.columns
+
+    window.player= player
+
+    // There are 3 columns, findable in @columns
+    player.changeColumn= function(direction) {
+      columnIndex += (direction == 'left') ? -1 : 1;
+      if(columnIndex > 2) {return columnIndex = 2}
+      if(columnIndex < 0) {return columnIndex = 0}
+      player.x = columns[columnIndex].x + 77;
+    }
 
     player.move = function() {
-      this.x += this.vx
-      if(tile_map.atRect(player.rect()).length > 0) { 
-        this.x -= this.vx 
-      }
-      this.vx = 0
+      // this.x += this.vx
+      // if(tile_map.atRect(player.rect()).length > 0) { 
+      //   this.x -= this.vx 
+      // }
+      // this.vx = 0
+
+
 
       this.y += this.vy
       var block = tile_map.atRect(player.rect())[0]
       if(block) { 
         // Heading downwards
         if(this.vy > 0) { 
-          this.can_jump = true 
           this.y = block.rect().y - 1
-        }
-        // Heading upwards (jumping)
-        else if(this.vy < 0) {
-          this.y = block.rect().bottom + this.height
         }
         this.vy = 0
       }
@@ -88,7 +97,6 @@ function PlayState() {
     player.anim_left = anim.slice(10,12)
     player.anim_right = anim.slice(12,14)
     player.vx = player.vy = 0
-    player.can_jump = true
 
     player.setImage( player.anim_default.next() )
     jaws.context.mozImageSmoothingEnabled = false;  // non-blurry, blocky retro scaling
@@ -100,12 +108,10 @@ function PlayState() {
     player.setImage( player.anim_default.next() )
 
     player.vx = 0
-    if(jaws.pressed("left"))  { player.changeLine('left') }
-    if(jaws.pressed("right")) { player.changeLine('right') }
-    if(jaws.pressed("up"))    { if(player.can_jump) { player.vy = -10; player.can_jump = false } }
+    jaws.on_keyup(['left', 'right'], player.changeColumn)
 
     // some gravity
-    player.vy += 0.1
+    player.vy = 0.8
 
     // apply vx / vy (x velocity / y velocity), check for collision detection in the process.
     player.move()
