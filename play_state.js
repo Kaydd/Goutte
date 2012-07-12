@@ -5,7 +5,6 @@ function PlayState() {
   var tile_map
   this.columns = []
 
-  /* Called once when a game state is activated. Use it for one-time setup code. */
   this.setup = function() {
     this.columns = [{
       x: 0,
@@ -34,10 +33,9 @@ function PlayState() {
     }]
 
     blocks = new jaws.SpriteList()
-    // var world = new jaws.Rect(0,0,600,640*lines)
     var world = new jaws.Rect(0,0,300,320*3)
 
-    /* We create some 64x64 blocks and save them in array blocks */
+    // We will create block according to columns.block data
     for(var columnIndex = 0; columnIndex < 3; columnIndex++) { 
       column = this.columns[columnIndex]
       x = 45 + column.x
@@ -57,9 +55,10 @@ function PlayState() {
     viewport = new jaws.Viewport({max_x: world.width, max_y: world.height})
 
     player = new jaws.Sprite({x:177, y:50, scale: 2, anchor: "center_bottom"})
+    player.vy = 0.8
+
     columnIndex = 1
     columns = this.columns
-
     window.player= player
 
     // There are 3 columns, findable in @columns
@@ -70,23 +69,22 @@ function PlayState() {
       player.x = columns[columnIndex].x + 77;
     }
 
+    // #move only consider vy
     player.move = function() {
-      // this.x += this.vx
-      // if(tile_map.atRect(player.rect()).length > 0) { 
-      //   this.x -= this.vx 
-      // }
-      // this.vx = 0
-
-
-
+      // Move
       this.y += this.vy
+
+      // Check collision
+      // In case of collision, :
+      //    If block is feature, then block disapear and player change
+      //    If block is obstacle:
+      //      If block can be overcome, nothing happened.
+      //      If block cannot be overcome, player stop and Game over.
       var block = tile_map.atRect(player.rect())[0]
       if(block) { 
-        // Heading downwards
         if(this.vy > 0) { 
           this.y = block.rect().y - 1
         }
-        this.vy = 0
       }
     }
 
@@ -103,15 +101,9 @@ function PlayState() {
     jaws.preventDefaultKeys(["up", "down", "left", "right", "space"])
   }
 
-  /* update() will get called each game tick with your specified FPS. Put game logic here. */
   this.update = function() {
     player.setImage( player.anim_default.next() )
-
-    player.vx = 0
     jaws.on_keyup(['left', 'right'], player.changeColumn)
-
-    // some gravity
-    player.vy = 0.8
 
     // apply vx / vy (x velocity / y velocity), check for collision detection in the process.
     player.move()
@@ -121,11 +113,8 @@ function PlayState() {
     viewport.centerAround(player)
   }
 
-  /* Directly after each update draw() will be called. Put all your on-screen operations here. */
   this.draw = function() {
     jaws.clear()
-
-    // the viewport magic. wrap all draw()-calls inside viewport.apply and it will draw those relative to the viewport.
     viewport.apply( function() {
       blocks.draw()
       player.draw()
