@@ -54,49 +54,12 @@ function PlayState() {
 
     viewport = new jaws.Viewport({max_x: world.width, max_y: world.height})
 
-    player = new jaws.Sprite({x:177, y:50, scale: 2, anchor: "center_bottom"})
-    player.vy = 0.8
-
     columnIndex = 1
     columns = this.columns
-    window.player= player
-
-    // There are 3 columns, findable in @columns
-    player.changeColumn= function(direction) {
-      columnIndex += (direction == 'left') ? -1 : 1;
-      if(columnIndex > 2) {return columnIndex = 2}
-      if(columnIndex < 0) {return columnIndex = 0}
-      player.x = columns[columnIndex].x + 77;
     }
 
-    // #move only consider vy
-    player.move = function() {
-      // Move
-      this.y += this.vy
+    playerO = (new Player).initialize()
 
-      // Check collision
-      // In case of collision, :
-      //    If block is feature, then block disapear and player change
-      //    If block is obstacle:
-      //      If block can be overcome, nothing happened.
-      //      If block cannot be overcome, player stop and Game over.
-      var block = tile_map.atRect(player.rect())[0]
-      if(block) { 
-        if(this.vy > 0) { 
-          this.y = block.rect().y - 1
-        }
-      }
-    }
-
-    var anim = new jaws.Animation({sprite_sheet: "images/droid_11x15.png", frame_size: [11,15], frame_duration: 100})
-    player.anim_default = anim.slice(0,5)
-    player.anim_up = anim.slice(6,8)
-    player.anim_down = anim.slice(8,10)
-    player.anim_left = anim.slice(10,12)
-    player.anim_right = anim.slice(12,14)
-    player.vx = player.vy = 0
-
-    player.setImage( player.anim_default.next() )
     jaws.context.mozImageSmoothingEnabled = false;  // non-blurry, blocky retro scaling
     jaws.preventDefaultKeys(["up", "down", "left", "right", "space"])
   }
@@ -117,7 +80,7 @@ function PlayState() {
     jaws.clear()
     viewport.apply( function() {
       blocks.draw()
-      player.draw()
+      playerO.player.draw()
     });
   }
 }
